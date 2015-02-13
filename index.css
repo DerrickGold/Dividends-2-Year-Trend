@@ -1,0 +1,56 @@
+body {
+	height: 100%;
+	background-color: lightgrey;
+}
+.axis path, .axis line {
+		fill: none;
+		stroke: black;
+		stroke-width: 1;
+		shape-rendering: cripsEdges;
+}
+
+.axis text { 
+	font-size: 100%;
+	text-rendering: optimizeSpeed;
+}
+
+
+
+.tickerLabel {
+	font-size: 20px;
+	fill: black;
+	text-rendering: optimizeSpeed;
+}
+
+.plotDataText {
+	font-size: 15px;
+	fill: black;
+	text-rendering: optimizeSpeed;
+}
+
+.plotDataName {
+	font-size: 12px;
+	fill: black;
+	text-rendering: optimizeSpeed;
+}
+
+.companyPlot {
+	stroke: white;	
+	stroke-width: 3;
+}
+
+
+#sectorBox {
+	display: inline-block;
+	backgrond-color: blue;
+	width: 300px;	
+	height: 100%;
+
+}
+
+.chartContainer {
+	height: 100%;
+	display: inline-block;	
+
+}
+			
