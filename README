@@ -16,22 +16,5 @@ The size of each circle represents the companies current Earnings Per Share (EPS
 interactivity features include panning, zooming, and clicking each circle to bring them
 to the foreground.
 
-Yet to be added is a legend indicating what sectors the colors of each circle represents, here
-is a list for now:
-
-   Consumer Discretionar: red
-   Consumer Staples: blue
-   Energy: DarkGoldenRod
-   Financials: green
-   Health Care: DarkOrange
-   Industrials: grey
-   Information Tech: LightSkyBlue
-   Materials: Magenta
-   Telecommunications: Yellow
-   Utilities: SpringGreen
-
-To Run:
-   Open index.html in your prefered browser, then enjoy!
-
 
 Dividend data can be found from: http://dripinvesting.org/tools/tools.asp
