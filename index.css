@@ -1,6 +1,8 @@
-body {
+html, body {
 	height: 100%;
 	background-color: lightgrey;
+	margin: 0;
+	padding: 0;
 }
 .axis path, .axis line {
 		fill: none;
@@ -42,15 +44,27 @@ body {
 
 #sectorBox {
 	display: inline-block;
-	backgrond-color: blue;
-	width: 300px;	
-	height: 100%;
-
+	position: absolute;
+	/*width: 300px;	
+	height: 100%;*/
+	margin-left: auto;
+	margin-right: auto;
+	right: 25%;
+	bottom: 0;
 }
 
+.sectorText {
+	font-size: 16px;
+	text-rendering: optimizeSpeed;
+	cursor: pointer;
+}
+
+
 .chartContainer {
-	height: 100%;
 	display: inline-block;	
+	position: absolute;
+	left: 0px;
+	top: 0px;
 
 }
 			

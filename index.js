@@ -136,12 +136,84 @@ var ChartScaler = ( function() {
 	}
 })();
 
+function createLegend(sectors, filterFn) {
+	var legendContentWidth = 1000;
+	var legendContentHeight = 50;
+	var textSpacing = 10;
+	
+	var sideBar = d3.select("#sectorBox").append("svg")
+					.attr("class", "sidebar")
+					.attr("width", window.innerWidth/2).attr("height", "50")
+					.attr("viewBox", "0 0 " + legendContentWidth + " " +
+						  legendContentHeight);
+	
+	sideBar.append("rect").attr("width", "100%").attr("height", "100%")
+			.attr("fill", "black")
+			.attr("stroke", "black").append("g");
+					
+	
+	function sectColor(d) { return d[d3.keys(d)[0]]; }
+	
+	var sectorIDNum = 0;
+	var nextPos = textSpacing;
+	var labels = sideBar.selectAll("text").data(sectors).enter()
+					.append("text").text(function(d) {
+						return d3.keys(d);
+					})
+					.attr("fill", sectColor)
+					.attr("class", "sectorText")
+					.attr("id", function(d) {
+						var id = "sectorLegend" + 	sectorIDNum;
+						d.cssID = "#" + id;
+						sectorIDNum++;
+						return id;
+					})
+					.each(function(d) {
+						d.this = sideBar.select(d.cssID);
+					})
+					.attr("x", function(d) {
+						var pos = nextPos;
+						nextPos += this.getComputedTextLength() + textSpacing;
+						return pos;	
+					})
+					.attr("y", "50%")
+					.on("mouseover", function(d) {
+						
+						if(d.this.attr("enabled") != "yes")
+							d.this.attr("fill", "white");
+						else
+							d.this.attr("fill", sectColor);
+						
+					})
+					.on("mouseout", function(d) {
+						var obj = d.this
+						
+						if(d.this.attr("enabled") == "yes") 
+							d.this.attr("fill", "white");
+						else
+							d.this.attr("fill", function(){ return sectColor(d); });
+					})
+					.on("click", function(d) {
+						if(d.this.attr("enabled")) {
+							d.this.attr("enabled", null);
+							d.this.style("text-decoration", null);	
+						} else {
+							d.this.attr("enabled", "yes");
+							d.this.style("text-decoration", "line-through");	
+						}
+						filterFn(d);
+					});
+	
+}
 
 
 document.addEventListener("DOMContentLoaded", function(e) {
+	var sideBarWd = 0;
 	
-	var width = window.innerWidth, height = window.innerHeight,
-		xPadding = 40, yPadding = 20
+	
+	var width = window.innerWidth - sideBarWd, 
+		height = window.innerHeight,
+		xPadding = 40, yPadding = 20;
 
 	//configure plot data size
 	var pointWidth = 0.5, pointHeight = 0.5, 
@@ -149,21 +221,20 @@ document.addEventListener("DOMContentLoaded", function(e) {
 		cullMin = pointWidth, cullMax = 600,
 		epsScaleFactor = 10;
 
-	var colors = {
-		"Consumer Discretionary" : "red",
-		"Consumer Staples": "blue",
-		"Energy": "DarkGoldenRod",
-		"Financials": "green",
-		"Health Care": "DarkOrange",
-		"Industrials": "grey",
-		"Information Tech": "LightSkyBlue",
-		"Materials": "Magenta",
-		"Telecommunications": "Yellow",
-		"Utilities": "SpringGreen"
+	var SectorColors = [
+		{"Consumer Discretionary" : "red"},
+		{"Consumer Staples": "blue" },
+		{"Energy": "DarkGoldenRod" },
+		{"Financials": "green"},
+		{"Health Care": "DarkOrange" },
+		{"Industrials": "grey" },
+		{"Information Tech": "LightSkyBlue" },
+		{"Materials": "Magenta" },
+		{"Telecommunications": "Yellow" },
+		{"Utilities": "SpringGreen" }
+	];
 
-	};
-
-
+	
 
 	var zoomHandler = ZoomHandler.init({
 		maxZoom: 100
@@ -173,12 +244,11 @@ document.addEventListener("DOMContentLoaded", function(e) {
 		yRange: [yPadding, height - yPadding]
 	});
 
-
-
 	var svg = d3.select(".chartContainer").append("svg")
 		.attr("width", width)
 		.attr("height", height)
 		.call(zoomHandler.z)
+		
 		//disable d3's zoom drag to override with my own
 		.on("mousedown.zoom", null)
 		.on("mousemove.zoom", null)
@@ -192,7 +262,8 @@ document.addEventListener("DOMContentLoaded", function(e) {
 
 			overLay.select(".popup").remove();
 			draw(zoomHandler.offset, zoomHandler.zoom);		
-		}));
+		}))
+		.style("left", sideBarWd);
 
 	//create background and add axis to it
 	var bg = svg.append("svg");
@@ -228,8 +299,7 @@ document.addEventListener("DOMContentLoaded", function(e) {
 			.attr("height", function(d) { return scale * (d.EPS/epsScaleFactor/pointHeight)})
 			.on("click", function(d) {
 				(function(data) {
-						var plot = bg.select(data.cssID);
-						cloneSelection(circlePopup, plot, "popup").on("mouseout", function(){ 
+						cloneSelection(circlePopup, data.this, "popup").on("mouseout", function(){ 
 							overLay.select(".popup").remove();
 						});
 
@@ -240,9 +310,9 @@ document.addEventListener("DOMContentLoaded", function(e) {
 
 				if(temp < cullMin || temp > cullMax || d.drawPosX < -temp || d.drawPosY < -temp || 
 				   d.drawPosX > window.innerWidth || d.drawPosY > window.innerHeight) 
-					d3.select(d.cssID).attr("display", "none");
+					d.this.attr("display", "none");
 				else
-					d3.select(d.cssID).attr("display", "block");
+					d.this.attr("display", "block");
 
 			});
 
@@ -310,23 +380,28 @@ document.addEventListener("DOMContentLoaded", function(e) {
 				var dataCache = bg.selectAll("svg").data(dataset).enter().append("svg")
 								.attr("class", "scaledData")
 								.attr("id", function(d){
-									d.cssID = "#plotPoint" + idNumber;
+									
 									var id = "plotPoint" + idNumber;
+									d.cssID = "#" + id;
 									idNumber+=1;
 									return id;
 								})
+								.each(function(d) {
+									d.this = bg.select(d.cssID);	
+								})
+								.attr("sector", function(d) { return d.Sector; })
 								.attr("width", pointWidth).attr("height", pointHeight)
 								.attr("viewBox", "0 0 " + pointContentWidth + " " + pointContentHeight);
 
 				dataCache.append("circle").attr("class", "companyPlot")
 							.attr("cx","50%").attr("cy", "50%").attr("r", "48%")
 							.attr("fill", function(d) {
-								/*if(d.TY > 0 && d.NY > 0) return "green";
-								else if (d.TY > 0 && d.NY <= 0) return "orange";
-								else if (d.TY <= 0 && d.NY <= 0) return "red";
-								return "yellow";*/
-								if(!colors[d.Sector])colors[d.Sector] = d.Sector;
-								return colors[d.Sector];
+					
+								 var tmp = SectorColors.filter(function(a) {
+									if(a[d.Sector] != undefined) return a[d.Sector];
+								})[0][d.Sector];
+					
+								return tmp;
 							});
 
 
@@ -372,12 +447,28 @@ document.addEventListener("DOMContentLoaded", function(e) {
 
 
 				draw(zoomHandler.offset, zoomHandler.zoom);
-				console.log(colors);
 		});
 
 	}
 
 	loadData('data1.csv');
+	
+	createLegend(SectorColors, function(d) {
+		var sectorFilter = d3.keys(d)[0];
+		
+		bg.selectAll("svg[sector=\"" + sectorFilter + "\"]")
+		.each(function(d) {
+				var obj = bg.select(d.cssID); 
+				if(obj.attr("visibility") == "hidden")
+					obj.attr("visibility", "visible");	
+				else 
+					obj.attr("visibility", "hidden");	
+		});
+		
+	});
+	
+	
+	
 	d3.select(window).on("resize", function(){
 		chartScaler.xRange = [xPadding, window.innerWidth - xPadding];
 		chartScaler.yRange = [yPadding, window.innerHeight - yPadding];
