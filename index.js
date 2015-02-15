@@ -208,10 +208,8 @@ function createLegend(sectors, filterFn) {
 
 
 document.addEventListener("DOMContentLoaded", function(e) {
-	var sideBarWd = 0;
 	
-	
-	var width = window.innerWidth - sideBarWd, 
+	var width = window.innerWidth, 
 		height = window.innerHeight,
 		xPadding = 40, yPadding = 20;
 
@@ -220,6 +218,9 @@ document.addEventListener("DOMContentLoaded", function(e) {
 		pointContentWidth = 150, pointContentHeight = 150,
 		cullMin = pointWidth, cullMax = 600,
 		epsScaleFactor = 10;
+	
+	var XTitleX = 500,
+		XTitleY = height/2 + 20;
 
 	var SectorColors = [
 		{"Consumer Discretionary" : "red"},
@@ -262,28 +263,60 @@ document.addEventListener("DOMContentLoaded", function(e) {
 
 			overLay.select(".popup").remove();
 			draw(zoomHandler.offset, zoomHandler.zoom);		
-		}))
-		.style("left", sideBarWd);
+		}));
 
 	//create background and add axis to it
 	var bg = svg.append("svg");
-	bg.append("g").attr("class", "axis").attr("id", "xaxis");
+	bg.append("g").attr("class", "axis").attr("id", "xaxis")
+		//create title for axis
+	bg.append("text").attr("id", "xAxisTitle").text("This Years EPS Growth (%)").style("font-size", "20px");
+	
 	bg.append("g").attr("class", "axis").attr("id", "yaxis");
-
-
+	bg.append("text").attr("id", "yAxisTitle").text("Next Years EPS Growth (%)")
+		.attr("transform", "rotate(-90)")
+		.style("font-size", "20px");
+	
+	
 	var overLay = svg.append("svg");
 	var circlePopup = overLay.append("g");
 
+	var Title = overLay.append("text").text("2-Year EPS Growth Overview")
+					.attr("x", function(){
+						return (window.innerWidth - this.getComputedTextLength())/2;	
+					}).attr("y", "5%")
+					.style("font-size", "20")
+					.style("text-decoration", "underline");
 
+	
+
+	/*overLay.append("text").attr("id", "xAxisTitle").text("This Years EPS Growth (%)")
+			.attr("x", "20%").attr("y", "20%");
+	
+	overLay.append("text").attr("id", "yAxisTitle").text("Next Years EPS Growth (%)")
+			.attr("x", "40%").attr("y", "40%").attr("transform", "rotate(-90)");	*/
+	
+	
+	
 	function draw(translation, scale) {
 		chartScaler.scale(scale);
-
+		
+		//redraw axis
 		d3.select("#xaxis").attr("transform", "translate("+ 
 				  translation[0] + ", " + parseFloat(chartScaler.yScale(0) + translation[1]) + ")" ).call(chartScaler.xAxis);
+		
 		d3.select("#yaxis").attr("transform", "translate(" +  
 				  parseFloat(chartScaler.xScale(0) + translation[0]) + "," +  translation[1]+")").call(chartScaler.yAxis);	
 
-
+		//redraw axis title
+		d3.select("#xAxisTitle").attr("transform", "translate(" +  
+				  parseFloat(chartScaler.xScale(chartScaler.xDomain[1] / 2) + translation[0]) + "," +
+				parseFloat(chartScaler.yScale(chartScaler.yDomain[1] / 8) +  translation[1])+")");	
+	
+		//redraw axis title
+		d3.select("#yAxisTitle").attr("transform", "translate(" +  
+				parseFloat(chartScaler.xScale(chartScaler.xDomain[0] - 1) + translation[0]) + "," +
+				parseFloat(chartScaler.yScale(0) +  translation[1])+"), rotate(-90)");
+		
 		bg.selectAll(".scaledData")
 		.attr('x', function(d){
 				d.drawPosX = translation[0] + chartScaler.xScale(d.TY) 
@@ -354,7 +387,7 @@ document.addEventListener("DOMContentLoaded", function(e) {
 
 				//remove data that has no TY and NY attribute
 				dataset = dataset.filter(function(d) {
-					return d.TY != "n/a" && d.NY != "n/a" && d.EPS != "n/a";
+					return d.TY != "n/a" && d.NY != "n/a" && d.EPS != "n/a" && d.Sector != "n/a";
 				});
 
 				dataset.forEach(function(d) {
@@ -396,7 +429,6 @@ document.addEventListener("DOMContentLoaded", function(e) {
 				dataCache.append("circle").attr("class", "companyPlot")
 							.attr("cx","50%").attr("cy", "50%").attr("r", "48%")
 							.attr("fill", function(d) {
-					
 								 var tmp = SectorColors.filter(function(a) {
 									if(a[d.Sector] != undefined) return a[d.Sector];
 								})[0][d.Sector];
@@ -445,6 +477,9 @@ document.addEventListener("DOMContentLoaded", function(e) {
 							}).attr("y", "85%");						
 
 
+
+		
+			
 
 				draw(zoomHandler.offset, zoomHandler.zoom);
 		});
