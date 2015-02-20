@@ -11,7 +11,7 @@ html, body {
 		shape-rendering: cripsEdges;
 }
 
-.axis text { 
+.axis text {
 	font-size: 100%;
 	text-rendering: optimizeSpeed;
 }
@@ -37,7 +37,7 @@ html, body {
 }
 
 .companyPlot {
-	stroke: white;	
+	stroke: white;
 	stroke-width: 3;
 }
 
@@ -45,7 +45,7 @@ html, body {
 #sectorBox {
 	display: inline-block;
 	position: absolute;
-	/*width: 300px;	
+	/*width: 300px;
 	height: 100%;*/
 	margin-left: auto;
 	margin-right: auto;
@@ -61,10 +61,10 @@ html, body {
 
 
 .chartContainer {
-	display: inline-block;	
+	display: inline-block;
 	position: absolute;
 	left: 0px;
 	top: 0px;
 
 }
-			
+
