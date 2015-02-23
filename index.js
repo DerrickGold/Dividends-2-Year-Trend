@@ -138,18 +138,20 @@ var ChartScaler = ( function() {
 
 function createLegend(sectors, filterFn) {
 	var legendContentWidth = 1000;
-	var legendContentHeight = 50;
+	var legendContentHeight = 40;
 	var textSpacing = 10;
-
-	var sideBar = d3.select("#sectorBox").append("svg")
+	var containerWd = (window.innerWidth/3)*2;
+	
+	var sideBar = d3.select("#sectorBox").style("right", function(){
+						return (window.innerWidth - containerWd)/2 + "px";
+					}).append("svg")
 					.attr("class", "sidebar")
-					.attr("width", window.innerWidth/2).attr("height", "50")
+					.attr("width", containerWd)
 					.attr("viewBox", "0 0 " + legendContentWidth + " " +
 						  legendContentHeight);
 
 	sideBar.append("rect").attr("width", "100%").attr("height", "100%")
-			.attr("fill", "black")
-			.attr("stroke", "black").append("g");
+			.attr("fill", "black").append("g");
 
 
 	function sectColor(d) { return d[d3.keys(d)[0]]; }
@@ -176,18 +178,15 @@ function createLegend(sectors, filterFn) {
 						nextPos += this.getComputedTextLength() + textSpacing;
 						return pos;
 					})
-					.attr("y", "50%")
+					.attr("y", function(d){ return (legendContentHeight + this.getBBox().height)/2;})
 					.on("mouseover", function(d) {
-
 						if(d.this.attr("enabled") != "yes")
 							d.this.attr("fill", "white");
 						else
 							d.this.attr("fill", sectColor);
-
 					})
 					.on("mouseout", function(d) {
 						var obj = d.this
-
 						if(d.this.attr("enabled") == "yes")
 							d.this.attr("fill", "white");
 						else
