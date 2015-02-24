@@ -455,13 +455,6 @@ function initChart() {
 									d3.max(dataset, function(d) { return d.EPS; })];
 
 
-			//text-anchor is broken on everything but chrome on windows?
-			anchor = (function textAnchoring() {
-				if (navigator.userAgent.match(/chrome/i) && navigator.platform.match(/win/i)) {
-					return "middle";
-				}
-				return "inherit";
-			})();
 
 			//create a scalable container for display data
 			var idNumber = 0;
@@ -498,8 +491,7 @@ function initChart() {
 				.attr("x", function() {
 					return (pointContentWidth - (this.getBBox().width || this.getComputedTextLength())) / 2;
 				})
-				.attr("y", "22%")
-				.attr("text-anchor", anchor);
+				.attr("y", "22%");
 
 			dataCache.append("text")
 				.attr("class", "tickerLabel")
@@ -509,8 +501,7 @@ function initChart() {
 				.attr("x", function() {
 					return (pointContentWidth - (this.getBBox().width || this.getComputedTextLength())) / 2;
 				})
-				.attr("y", "40%")
-				.attr("text-anchor", anchor);
+				.attr("y", "40%");
 
 			dataCache.append("text")
 				.attr("class", "plotDataText")
@@ -518,8 +509,7 @@ function initChart() {
 				.attr("x", function() {
 					return (pointContentWidth - (this.getBBox().width || this.getComputedTextLength())) / 2;
 				})
-				.attr("y", "55%")
-				.attr("text-anchor", anchor);
+				.attr("y", "55%");
 
 			dataCache.append("text")
 				.attr("class", "plotDataText")
@@ -527,8 +517,7 @@ function initChart() {
 				.attr("x", function() {
 					return (pointContentWidth - (this.getBBox().width || this.getComputedTextLength())) / 2;
 				})
-				.attr("y", "65%")
-				.attr("text-anchor", anchor);
+				.attr("y", "65%");
 
 			dataCache.append("text")
 				.attr("class", "plotDataText")
@@ -536,8 +525,7 @@ function initChart() {
 				.attr("x", function() {
 					return (pointContentWidth - (this.getBBox().width || this.getComputedTextLength())) / 2;
 				})
-				.attr("y", "75%")
-				.attr("text-anchor", anchor);
+				.attr("y", "75%");
 
 			dataCache.append("text")
 				.attr("class", "plotDataText")
@@ -545,8 +533,7 @@ function initChart() {
 				.attr("x", function() {
 					return (pointContentWidth - (this.getBBox().width || this.getComputedTextLength())) / 2;
 				})
-				.attr("y", "85%")
-				.attr("text-anchor", anchor);
+				.attr("y", "85%");
 
 			//this ensures we can always zoom in to see every element regardless of the count
 			zoomHandler.zoomScale(zoomHandler.minZoom, idNumber);
@@ -575,12 +562,13 @@ function initChart() {
 document.addEventListener("DOMContentLoaded", function(e) {
 	var dataSet = 1;
 	var temp = initChart();
+	var baseDir = "./";
 	d3.select("#chartTitle").on('click', function() {
 		temp.delete();
 		dataSet++;
 		if(dataSet > 2) dataSet = 1;
-		temp.load("data" + dataSet + ".csv");			
+		temp.load(baseDir + "data" + dataSet + ".csv");			
 	});
 		
-	temp.load("data1.csv");
+	temp.load(baseDir+"data1.csv");
 });
