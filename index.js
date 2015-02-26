@@ -657,7 +657,7 @@ var EPSScatter = (function() {
 
 					dataCache.append("text")
 						.attr("class", "plotDataText")
-						.text(function(d) { return "P/E%: " + d.PE; })
+						.text(function(d) { return "P/E: " + d.PE; })
 						.attr("x", function() {
 							return (self.pointContentWidth - (this.getBBox().width || this.getComputedTextLength())) / 2;
 						})
