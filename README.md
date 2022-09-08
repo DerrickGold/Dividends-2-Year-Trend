@@ -1,10 +1,12 @@
-Dividends-2-Year-Trend
+# Dividends-2-Year-Trend
+
+![](./screenshots/2yeardividend.png)
 
 This is just a small visualization created to display the 2 year trend for
 U.S companies based on:
 
-    -This Years Earnings Per Share growth % (TY) on the X axis
-    -Next Years Earnings Per Share growth % (NY) on the Y axis
+- This Years Earnings Per Share growth % (TY) on the X axis
+- Next Years Earnings Per Share growth % (NY) on the Y axis
 
 The result maps out comapnies into four quadrants:
     -top right: being a 2 year growth trend
@@ -16,6 +18,7 @@ The size of each circle represents the companies current Earnings Per Share (EPS
 interactivity features include panning, zooming, and clicking each circle to bring them
 to the foreground.
 
+---
 
 Dividend data can be found from: http://dripinvesting.org/tools/tools.asp
 
